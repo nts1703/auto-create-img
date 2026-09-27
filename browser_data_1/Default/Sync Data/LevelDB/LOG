@@ -1,2 +1,3 @@
-2026/09/27-23:44:52.836 485c Creating DB D:\my_ai_tool\browser_data_1\Default\Sync Data\LevelDB since it was missing.
-2026/09/27-23:44:52.850 485c Reusing MANIFEST D:\my_ai_tool\browser_data_1\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/09/28-00:13:01.992 1758 Reusing MANIFEST D:\my_ai_tool\browser_data_1\Default\Sync Data\LevelDB/MANIFEST-000001
+2026/09/28-00:13:01.993 1758 Recovering log #3
+2026/09/28-00:13:01.994 1758 Reusing old log D:\my_ai_tool\browser_data_1\Default\Sync Data\LevelDB/000003.log 

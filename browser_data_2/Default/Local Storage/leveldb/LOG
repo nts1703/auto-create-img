@@ -1,2 +1,17 @@
-2026/09/27-23:45:43.222 4a5c Creating DB D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb since it was missing.
-2026/09/27-23:45:43.234 4a5c Reusing MANIFEST D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/28-00:13:34.268 5a0c Reusing MANIFEST D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/28-00:13:34.273 5a0c Recovering log #8
+2026/09/28-00:13:34.275 5a0c Reusing old log D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb/000008.log 
+2026/09/28-00:14:34.364 28d8 Level-0 table #12: started
+2026/09/28-00:14:34.370 28d8 Level-0 table #12: 20184 bytes OK
+2026/09/28-00:14:34.372 28d8 Delete type=0 #8
+2026/09/28-00:14:34.373 28d8 Compacting 4@0 + 0@1 files
+2026/09/28-00:14:34.377 28d8 Generated table #13@0: 33 keys, 15560 bytes
+2026/09/28-00:14:34.377 28d8 Compacted 4@0 + 0@1 files => 15560 bytes
+2026/09/28-00:14:34.378 28d8 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/09/28-00:14:34.378 28d8 Delete type=2 #3
+2026/09/28-00:14:34.379 28d8 Delete type=2 #6
+2026/09/28-00:14:34.379 28d8 Delete type=2 #9
+2026/09/28-00:14:34.379 28d8 Delete type=2 #12
+2026/09/28-00:15:34.927 28d8 Level-0 table #15: started
+2026/09/28-00:15:34.930 28d8 Level-0 table #15: 14440 bytes OK
+2026/09/28-00:15:34.931 28d8 Delete type=0 #11

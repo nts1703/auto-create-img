@@ -1,2 +1,5 @@
-2026/09/27-23:49:11.261 85dc Creating DB D:\my_ai_tool\browser_data_4\Default\Local Storage\leveldb since it was missing.
-2026/09/27-23:49:11.273 85dc Reusing MANIFEST D:\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/28-00:07:06.252 2064 Reusing MANIFEST D:\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/28-00:07:06.256 2064 Recovering log #3
+2026/09/28-00:07:06.257 2064 Level-0 table #3: started
+2026/09/28-00:07:06.262 2064 Level-0 table #3: 14164 bytes OK
+2026/09/28-00:07:06.265 2064 Delete type=0 #3

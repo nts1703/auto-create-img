@@ -1,2 +1,3 @@
-2026/09/27-23:44:52.853 485c Creating DB D:\my_ai_tool\browser_data_1\Default\Site Characteristics Database since it was missing.
-2026/09/27-23:44:52.867 485c Reusing MANIFEST D:\my_ai_tool\browser_data_1\Default\Site Characteristics Database/MANIFEST-000001
+2026/09/28-00:13:02.021 649c Reusing MANIFEST D:\my_ai_tool\browser_data_1\Default\Site Characteristics Database/MANIFEST-000001
+2026/09/28-00:13:02.022 649c Recovering log #3
+2026/09/28-00:13:02.022 649c Reusing old log D:\my_ai_tool\browser_data_1\Default\Site Characteristics Database/000003.log 

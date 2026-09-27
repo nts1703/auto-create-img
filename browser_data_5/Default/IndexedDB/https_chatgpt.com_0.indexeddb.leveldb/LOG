@@ -1,2 +1,3 @@
-2026/09/27-23:49:53.424 636c Creating DB D:\my_ai_tool\browser_data_5\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb since it was missing.
-2026/09/27-23:49:53.428 636c Reusing MANIFEST D:\my_ai_tool\browser_data_5\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/27-23:58:52.319 c58 Reusing MANIFEST D:\my_ai_tool\browser_data_5\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/27-23:58:52.320 c58 Recovering log #3
+2026/09/27-23:58:52.321 c58 Reusing old log D:\my_ai_tool\browser_data_5\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/000003.log 

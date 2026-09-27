@@ -1,2 +1,3 @@
-2026/09/27-23:49:11.332 85dc Creating DB D:\my_ai_tool\browser_data_4\Default\Session Storage since it was missing.
-2026/09/27-23:49:11.350 85dc Reusing MANIFEST D:\my_ai_tool\browser_data_4\Default\Session Storage/MANIFEST-000001
+2026/09/28-00:07:06.331 2064 Reusing MANIFEST D:\my_ai_tool\browser_data_4\Default\Session Storage/MANIFEST-000001
+2026/09/28-00:07:06.332 2064 Recovering log #3
+2026/09/28-00:07:06.334 2064 Reusing old log D:\my_ai_tool\browser_data_4\Default\Session Storage/000003.log 
