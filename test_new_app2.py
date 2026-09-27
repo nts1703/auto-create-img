@@ -76,7 +76,7 @@ def upload_image(page, image_path, is_first=False):
         plus_btn = page.locator('button[aria-label="Thêm tệp và nội dung khác"]').first
         plus_btn.wait_for(state="visible", timeout=10000)
         plus_btn.click()
-        page.wait_for_timeout(600)
+        page.wait_for_timeout(700)
 
         # 2. Click menu "Thêm ảnh & tệp" + bắt File Chooser
         with page.expect_file_chooser(timeout=15000) as fc_info:
@@ -86,21 +86,36 @@ def upload_image(page, image_path, is_first=False):
 
         file_chooser = fc_info.value
         file_chooser.set_files(image_path)
+        print(f"   ✅ Đã chọn file trong File Chooser")
 
-        # 3. Đợi ảnh được attach thành công
-        page.wait_for_selector(
+        # 3. Chờ ảnh được gắn (nhanh – chỉ tối đa ~6 giây)
+        combined_selector = (
             'button[aria-label*="Remove"], button[aria-label*="Xóa"], '
-            '[data-testid*="file-thumbnail"], img[alt*="Uploaded"]',
-            timeout=20000
+            'button[aria-label*="Remove file"], button[aria-label*="Xóa tệp"], '
+            '[data-testid*="file-thumbnail"], [data-testid*="attachment"], '
+            'img[alt*="Uploaded"], div[class*="attachment"] img, '
+            'div[class*="file"] img, button[aria-label*="Close"]'
         )
+
+        try:
+            page.wait_for_selector(combined_selector, timeout=6000)
+            print(f"   ✅ Phát hiện ảnh đã gắn")
+        except:
+            # Fallback nhanh
+            page.wait_for_timeout(2000)
+            imgs = page.locator('form img, [data-testid="composer"] img').count()
+            if imgs == 0:
+                raise Exception("Không thấy dấu hiệu ảnh đã được gắn vào prompt")
+            print(f"   ✅ Phát hiện {imgs} ảnh trong composer (fallback)")
+
         print(f"   ✅ Đã attach xong: {filename}")
-        page.wait_for_timeout(1500)
         return True
 
     except Exception as e:
         print(f"   ❌ Lỗi attach {filename}: {e}")
         try:
             page.keyboard.press("Escape")
+            page.wait_for_timeout(500)
         except:
             pass
         return False
@@ -140,7 +155,7 @@ def send_prompt(page, text):
 
         send_button.wait_for(state="visible", timeout=10000)
 
-        # Đợi nút không bị disabled
+        # Đợi nút không bị disabled (tối đa 8 giây)
         try:
             page.wait_for_function(
                 """() => {
@@ -209,7 +224,7 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich):
                     timeout=180000
                 )
                 print(f"   🎨✅ Ảnh {idx+1} đã được vẽ xong!")
-                page.wait_for_timeout(3000)
+                # page.wait_for_timeout(3000)
             except Exception as e:
                 print(f"   ⚠️ Quá 3 phút không thấy ảnh mới. Bỏ qua...")
                 try:
