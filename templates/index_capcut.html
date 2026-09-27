@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CapCut Auto Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #7ec8e3;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 14px 10px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #ddd;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            user-select: none;
+        }
+
+        .option-btn:hover {
+            border-color: #3a7bd5;
+            background: rgba(58, 123, 213, 0.15);
+        }
+
+        .option-btn.active {
+            border-color: #00d2ff;
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(58, 123, 213, 0.25));
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
+        }
+
+        .preview-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+        }
+
+        .preview-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 6px;
+        }
+
+        .preview-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #00d2ff;
+            letter-spacing: 0.5px;
+        }
+
+        .upload-section {
+            margin-bottom: 28px;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .upload-area:hover {
+            border-color: #3a7bd5;
+            background: rgba(58, 123, 213, 0.08);
+        }
+
+        .upload-area.has-files {
+            border-color: #00d2ff;
+            background: rgba(0, 210, 255, 0.08);
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .upload-text {
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        .file-list {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #7ec8e3;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn-start {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.35);
+        }
+
+        .btn-start:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .status.running {
+            display: block;
+            background: rgba(0, 210, 255, 0.15);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            color: #7ec8e3;
+        }
+
+        .status.success {
+            display: block;
+            background: rgba(0, 200, 100, 0.15);
+            border: 1px solid rgba(0, 200, 100, 0.3);
+            color: #6fdf9f;
+        }
+
+        .status.error {
+            display: block;
+            background: rgba(255, 80, 80, 0.15);
+            border: 1px solid rgba(255, 80, 80, 0.3);
+            color: #ff8a8a;
+        }
+
+        .note {
+            margin-top: 18px;
+            font-size: 0.78rem;
+            color: #777;
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CapCut Auto Tool</h1>
+        <p class="subtitle">Tự động tạo video từ mẫu CapCut Web</p>
+
+        <!-- Số lượng ảnh -->
+        <div class="section">
+            <div class="section-title">📷 Số lượng ảnh</div>
+            <div class="options" id="soAnhOptions">
+                <div class="option-btn active" data-value="2">2 ảnh</div>
+                <div class="option-btn" data-value="3">3 ảnh</div>
+            </div>
+        </div>
+
+        <!-- Phong cách -->
+        <div class="section">
+            <div class="section-title">✨ Phong cách</div>
+            <div class="options" id="phongCachOptions">
+                <div class="option-btn active" data-value="nhẹ nhàng">Nhẹ nhàng</div>
+                <div class="option-btn" data-value="giật giật">Giật giật</div>
+            </div>
+        </div>
+
+        <!-- Số lượng video -->
+        <div class="section">
+            <div class="section-title">🎬 Số lượng video cần tạo</div>
+            <div class="options" id="soVideoOptions">
+                <div class="option-btn active" data-value="1">1</div>
+                <div class="option-btn" data-value="2">2</div>
+                <div class="option-btn" data-value="3">3</div>
+                <div class="option-btn" data-value="4">4</div>
+                <div class="option-btn" data-value="5">5</div>
+            </div>
+        </div>
+
+        <!-- Preview từ khóa search -->
+        <div class="preview-box">
+            <div class="preview-label">Từ khóa sẽ search trên CapCut:</div>
+            <div class="preview-text" id="previewKeyword">2 ảnh nhẹ nhàng</div>
+        </div>
+
+        <!-- Upload ảnh -->
+        <div class="upload-section">
+            <div class="section-title">🖼️ Chọn ảnh (tối thiểu theo số lượng đã chọn)</div>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Click để chọn ảnh từ máy</div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+            <input type="file" id="fileInput" multiple accept="image/*">
+        </div>
+
+        <!-- Nút bắt đầu -->
+        <button class="btn-start" id="btnStart" onclick="startProcess()">Bắt đầu tạo video</button>
+
+        <div class="status" id="statusBox"></div>
+
+        <p class="note">
+            Tool sẽ mở trình duyệt, đăng nhập CapCut (nếu chưa), sau đó tự động chạy theo cấu hình trên.<br>
+            Hãy mở Terminal để theo dõi tiến trình chi tiết.
+        </p>
+    </div>
+
+    <script>
+        let selectedSoAnh = "2";
+        let selectedPhongCach = "nhẹ nhàng";
+        let selectedSoVideo = "1";
+        let selectedFiles = [];
+
+        // Xử lý chọn option
+        function setupOptions(containerId, callback) {
+            const container = document.getElementById(containerId);
+            container.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    callback(btn.dataset.value);
+                    updatePreview();
+                });
+            });
+        }
+
+        setupOptions('soAnhOptions', (val) => { selectedSoAnh = val; });
+        setupOptions('phongCachOptions', (val) => { selectedPhongCach = val; });
+        setupOptions('soVideoOptions', (val) => { selectedSoVideo = val; });
+
+        function updatePreview() {
+            document.getElementById('previewKeyword').textContent = `${selectedSoAnh} ảnh ${selectedPhongCach}`;
+        }
+
+        // Upload ảnh
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            selectedFiles = Array.from(e.target.files);
+            const fileList = document.getElementById('fileList');
+            const uploadArea = document.getElementById('uploadArea');
+
+            if (selectedFiles.length > 0) {
+                uploadArea.classList.add('has-files');
+                fileList.innerHTML = selectedFiles.map(f => `• ${f.name}`).join('<br>');
+            } else {
+                uploadArea.classList.remove('has-files');
+                fileList.innerHTML = '';
+            }
+        });
+
+        async function startProcess() {
+            const soAnhCanThiet = parseInt(selectedSoAnh);
+
+            if (selectedFiles.length < soAnhCanThiet) {
+                showStatus(`Bạn cần chọn ít nhất ${soAnhCanThiet} ảnh!`, 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnStart');
+            btn.disabled = true;
+            showStatus('Đang gửi yêu cầu... Tool sẽ chạy ngầm.', 'running');
+
+            const formData = new FormData();
+            formData.append('so_anh', selectedSoAnh);
+            formData.append('phong_cach', selectedPhongCach);
+            formData.append('so_video', selectedSoVideo);
+            formData.append('tu_khoa', `${selectedSoAnh} ảnh ${selectedPhongCach}`);
+
+            selectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            try {
+                const res = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const text = await res.text();
+
+                if (res.ok) {
+                    showStatus(text, 'success');
+                } else {
+                    showStatus(text, 'error');
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                showStatus('Lỗi kết nối: ' + err.message, 'error');
+                btn.disabled = false;
+            }
+        }
+
+        function showStatus(msg, type) {
+            const box = document.getElementById('statusBox');
+            box.textContent = msg;
+            box.className = 'status ' + type;
+        }
+    </script>
+</body>
+</html>

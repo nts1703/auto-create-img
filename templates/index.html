@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thay Đồ Tự Động - ChatGPT</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background: #f4f4f4; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        
+        .section { margin: 25px 0; padding: 25px; border: 1px solid #eaeaea; border-radius: 10px; background: #fafafa; }
+        .section h3 { margin-top: 0; color: #10a37f; }
+        
+        /* Giao diện vùng kéo thả */
+        .dropzone {
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .dropzone:hover, .dropzone.dragover { border-color: #10a37f; background: #f0fcf9; }
+        .dropzone p { margin: 0; font-size: 16px; color: #666; pointer-events: none; }
+        .dropzone small { display: block; margin-top: 8px; color: #999; pointer-events: none; }
+        .dropzone input[type="file"] { display: none; }
+
+        /* Ô Textbox chuyên để Paste ảnh */
+        .paste-catcher {
+            margin-top: 15px;
+            width: 80%;
+            max-width: 400px;
+            padding: 12px;
+            font-size: 14px;
+            border: 1px dashed #10a37f;
+            border-radius: 6px;
+            text-align: center;
+            background: #fafafa;
+            color: #555;
+            cursor: text;
+            transition: all 0.2s;
+        }
+        .paste-catcher:focus {
+            outline: 2px solid #10a37f;
+            background: #e8f7f3;
+            color: #000;
+        }
+        .paste-catcher::placeholder { color: #888; }
+        
+        /* Giao diện hiển thị ảnh xem trước */
+        .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+        .preview-item {
+            position: relative; width: 90px; height: 90px; border-radius: 8px;
+            overflow: hidden; border: 2px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        button.submit-btn { 
+            width: 100%; padding: 16px; font-size: 18px; font-weight: bold;
+            background: #10a37f; color: white; border: none; border-radius: 8px; 
+            cursor: pointer; transition: background 0.3s; margin-top: 20px;
+        }
+        button.submit-btn:hover { background: #0d8a6a; }
+        
+        .clear-btn {
+            background: #ff4d4d; color: white; border: none; padding: 6px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; margin-top: 10px; display: none;
+        }
+        .clear-btn:hover { background: #cc0000; }
+
+        /* Radio buttons cho loại sản phẩm */
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 10px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px 14px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .radio-group label:hover {
+            border-color: #10a37f;
+            background: #f0fcf9;
+        }
+        .radio-group input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #10a37f;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Thay Đồ Tự Động bằng ChatGPT</h1>
+        
+        <form action="/process" method="post" enctype="multipart/form-data">
+            
+            <div class="section">
+                <h3>0. Loại sản phẩm (chọn 1)</h3>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="loai_sp" value="ao" checked>
+                        Áo
+                    </label>
+                    <label>
+                        <input type="radio" name="loai_sp" value="vay">
+                        Váy
+                    </label>
+                    <label>
+                        <input type="radio" name="loai_sp" value="quan">
+                        Quần
+                    </label>
+                    <label>
+                        <input type="radio" name="loai_sp" value="ca_set">
+                        Cả Set
+                    </label>
+                    <label>
+                        <input type="radio" name="loai_sp" value="chan_vay">
+                        Chân Váy
+                    </label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>1. Ảnh mẫu (Áo/Váy tham chiếu)</h3>
+                <div class="dropzone" id="zone-mau">
+                    <p>📂 Click để chọn file hoặc kéo thả ảnh vào đây</p>
+                    <input type="text" class="paste-catcher" id="paste-mau" placeholder="🖱️ Nhấp vào ô này và ấn Ctrl+V để dán ảnh" readonly>
+                    <small>Chỉ nhận 1 ảnh</small>
+                    <input type="file" name="anh_mau" id="input-mau" accept="image/*" required>
+                </div>
+                <div class="preview-container" id="preview-mau"></div>
+            </div>
+            
+            <div class="section">
+                <h3>2. Danh sách ảnh cần thay đồ</h3>
+                <div class="dropzone" id="zone-danhsach">
+                    <p>📂 Click để chọn file hoặc kéo thả ảnh vào đây</p>
+                    <input type="text" class="paste-catcher" id="paste-danhsach" placeholder="🖱️ Nhấp vào ô này và ấn Ctrl+V để dán ảnh" readonly>
+                    <small>Có thể dán/chọn nhiều lần để thêm ảnh</small>
+                    <input type="file" name="danhsach_anh" id="input-danhsach" accept="image/*" multiple required>
+                </div>
+                <button type="button" class="clear-btn" id="clear-danhsach">🗑️ Xóa danh sách</button>
+                <div class="preview-container" id="preview-danhsach"></div>
+            </div>
+            
+            <button type="submit" class="submit-btn">🚀 BẮT ĐẦU XỬ LÝ</button>
+        </form>
+    </div>
+
+    <script>
+        function setupDropzone(zoneId, inputId, previewId, pasteId, isMultiple, clearBtnId = null) {
+            const zone = document.getElementById(zoneId);
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const pasteBox = document.getElementById(pasteId);
+            const clearBtn = clearBtnId ? document.getElementById(clearBtnId) : null;
+            
+            let dataTransfer = new DataTransfer();
+
+            // 1. CLICK VÀO VÙNG TRỐNG -> Mở hộp thoại chọn file
+            zone.addEventListener('click', (e) => {
+                // Chỉ mở nếu user KHÔNG click vào ô paste
+                if (e.target !== pasteBox) {
+                    input.click();
+                }
+            });
+
+            // 2. KÉO THẢ
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // 3. DÁN VÀO Ô TEXTBOX (Ngăn việc click vào ô text làm mở file dialog)
+            pasteBox.addEventListener('click', (e) => e.stopPropagation());
+            
+            pasteBox.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const items = (e.clipboardData || window.clipboardData).items;
+                const files = [];
+                for (let item of items) {
+                    if (item.type.indexOf('image') === 0) {
+                        files.push(item.getAsFile());
+                    }
+                }
+                if (files.length > 0) {
+                    handleFiles(files);
+                    // Đổi chữ placeholder để user biết đã nhận
+                    pasteBox.placeholder = "✅ Đã nhận ảnh! Dán thêm hoặc xem bên dưới";
+                    setTimeout(() => {
+                        pasteBox.placeholder = "🖱️ Nhấp vào ô này và ấn Ctrl+V để dán ảnh";
+                    }, 2000);
+                } else {
+                    alert("Không tìm thấy ảnh trong Clipboard. Vui lòng copy lại!");
+                }
+            });
+
+            // 4. CHỌN FILE TỪ DIALOG
+            input.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+
+            // 5. NÚT XÓA DANH SÁCH
+            if (clearBtn) {
+                clearBtn.addEventListener('click', () => {
+                    dataTransfer = new DataTransfer();
+                    input.files = dataTransfer.files;
+                    updatePreview();
+                });
+            }
+
+            // Xử lý dữ liệu file
+            function handleFiles(files) {
+                if (files.length === 0) return;
+
+                if (!isMultiple) {
+                    dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(files[0]);
+                } else {
+                    for (let file of files) {
+                        if (file.type.startsWith('image/')) {
+                            dataTransfer.items.add(file);
+                        }
+                    }
+                }
+
+                input.files = dataTransfer.files;
+                updatePreview();
+            }
+
+            // Hiển thị ảnh
+            function updatePreview() {
+                preview.innerHTML = '';
+                if (clearBtn) {
+                    clearBtn.style.display = dataTransfer.files.length > 0 ? 'inline-block' : 'none';
+                }
+
+                for (let file of dataTransfer.files) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const div = document.createElement('div');
+                        div.className = 'preview-item';
+                        div.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+                        preview.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        setupDropzone('zone-mau', 'input-mau', 'preview-mau', 'paste-mau', false);
+        setupDropzone('zone-danhsach', 'input-danhsach', 'preview-danhsach', 'paste-danhsach', true, 'clear-danhsach');
+    </script>
+</body>
+</html>

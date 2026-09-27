@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Automation Tool - Tạo Video</title>
+    <style>
+        :root {
+            --primary-color: #0066ff;
+            --primary-hover: #0052cc;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Vùng chọn ảnh hiện đại */
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            padding: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            background: #fbfbfb;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #f0f6ff;
+        }
+
+        .upload-area i {
+            font-size: 40px;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .upload-area p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Ẩn input file mặc định */
+        input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Khung hiển thị ảnh xem trước */
+        .preview-container {
+            display: none;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            max-height: 250px;
+            background: #000;
+        }
+
+        .preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Giữ nguyên tỷ lệ ảnh không bị móp méo */
+            max-height: 250px;
+            display: block;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 102, 255, 0.2);
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Phần hướng dẫn */
+        .info {
+            margin-top: 30px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+
+        .info p {
+            margin: 0 0 8px 0;
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info strong {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🤖 AI Automation Tool</h1>
+        <p class="subtitle">Upload 1 ảnh → Tự động tạo 5 video</p>
+        
+        <form action="/process" method="post" enctype="multipart/form-data">
+            <div class="upload-area" id="uploadArea">
+                <span style="font-size: 3rem; display:block; margin-bottom:10px;">📸</span>
+                <p id="uploadText">Kéo thả ảnh vào đây hoặc <strong>Bấm để chọn ảnh</strong></p>
+                <input type="file" name="image" id="imageInput" accept="image/*" required>
+            </div>
+
+            <div class="preview-container" id="previewContainer">
+                <img id="imagePreview" src="" alt="Preview">
+            </div>
+
+            <button type="submit">🚀 Bắt đầu tạo</button>
+        </form>
+
+        
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewContainer = document.getElementById('previewContainer');
+        const uploadText = document.getElementById('uploadText');
+
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.addEventListener('load', function() {
+                    imagePreview.setAttribute('src', this.result);
+                    previewContainer.style.display = 'block'; // Hiển thị khung chứa ảnh
+                    uploadText.innerHTML = `Đã chọn: <strong>${file.name}</strong> (Bấm để thay đổi)`;
+                });
+
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>

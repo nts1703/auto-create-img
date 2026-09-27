@@ -1,0 +1,9 @@
+@"
+browser_data/
+browser_data_capcut/
+capcut_browser_data/
+__pycache__/
+*.log
+.env
+venv/
+"@ | Out-File -Encoding utf8 .gitignore

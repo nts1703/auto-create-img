@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tự Động Tạo Video CapCut</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background: #f0f2f5; color: #333; }
+        .container { max-width: 850px; margin: auto; background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { text-align: center; color: #111; margin-bottom: 25px; }
+        
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #e1e4e8; border-radius: 10px; background: #fafafa; }
+        .section h3 { margin-top: 0; color: #000; }
+        
+        .config-group { display: flex; gap: 20px; margin-bottom: 20px; }
+        .config-item { flex: 1; }
+        .config-item label { display: block; font-weight: bold; margin-bottom: 8px; }
+        .config-item input { width: 90%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        
+        .dropzone {
+            border: 2px dashed #000;
+            border-radius: 10px;
+            padding: 25px 20px;
+            text-align: center;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .dropzone:hover { background: #f8f9fa; }
+        .dropzone p { margin: 0; font-size: 16px; color: #555; pointer-events: none; }
+        .dropzone input[type="file"] { display: none; }
+
+        .paste-catcher {
+            margin-top: 12px;
+            width: 80%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px dashed #666;
+            border-radius: 6px;
+            text-align: center;
+            background: #fff;
+        }
+        .paste-catcher:focus { outline: 2px solid #000; background: #f0f0f0; }
+        
+        .preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .preview-item { width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid #ccc; }
+        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        button.submit-btn { 
+            width: 100%; padding: 16px; font-size: 18px; font-weight: bold;
+            background: #000; color: white; border: none; border-radius: 8px; 
+            cursor: pointer; transition: background 0.2s; margin-top: 15px;
+        }
+        button.submit-btn:hover { background: #333; }
+        
+        .clear-btn {
+            background: #ff4d4d; color: white; border: none; padding: 6px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 13px; margin-top: 10px; display: none;
+        }
+        
+        #loading-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.75); color: white; text-align: center; padding-top: 200px;
+            font-size: 22px; z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-overlay">
+        ⏳ Đang tiến hành tạo video tự động trên CapCut...<br>
+        <small style="font-size: 16px; color: #ccc; margin-top: 10px; display: block;">
+            Vui lòng không đóng trình duyệt Chromium đang mở
+        </small>
+    </div>
+
+    <div class="container">
+        <h1>🎬 Tự Động Tạo Video CapCut</h1>
+        
+        <form action="/process_capcut" method="post" enctype="multipart/form-data" onsubmit="showLoading()">
+            
+            <div class="config-group">
+                <div class="config-item">
+                    <label for="video_count">🎬 Số lượng video muốn tạo:</label>
+                    <input type="number" id="video_count" name="video_count" value="5" min="1" max="20" required>
+                </div>
+                <div class="config-item">
+                    <label for="images_per_video">🖼️ Số ảnh dùng cho 1 video:</label>
+                    <input type="number" id="images_per_video" name="images_per_video" value="3" min="1" max="10" required>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>📂 Kho ảnh đầu vào (Tải càng nhiều ảnh càng tốt)</h3>
+                <div class="dropzone" id="zone-danhsach">
+                    <p>Click chọn file hoặc Kéo thả nhiều ảnh vào đây</p>
+                    <input type="text" class="paste-catcher" id="paste-box" 
+                           placeholder="🖱️ Nhấp vào đây và ấn Ctrl+V để dán ảnh" readonly>
+                    <input type="file" name="danhsach_anh" id="input-danhsach" accept="image/*" multiple required>
+                </div>
+                <button type="button" class="clear-btn" id="clear-btn">🗑️ Xóa tất cả ảnh</button>
+                <div class="preview-container" id="preview-box"></div>
+            </div>
+            
+            <button type="submit" class="submit-btn">🚀 BẮT ĐẦU TẠO VIDEO</button>
+        </form>
+    </div>
+
+    <script>
+        const zone = document.getElementById('zone-danhsach');
+        const input = document.getElementById('input-danhsach');
+        const preview = document.getElementById('preview-box');
+        const pasteBox = document.getElementById('paste-box');
+        const clearBtn = document.getElementById('clear-btn');
+        let dataTransfer = new DataTransfer();
+
+        zone.addEventListener('click', (e) => {
+            if (e.target !== pasteBox) input.click();
+        });
+
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.style.background = '#e9ecef'; });
+        zone.addEventListener('dragleave', () => zone.style.background = '#fff');
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.style.background = '#fff';
+            handleFiles(e.dataTransfer.files);
+        });
+
+        pasteBox.addEventListener('click', (e) => e.stopPropagation());
+        pasteBox.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const items = (e.clipboardData || window.clipboardData).items;
+            const files = [];
+            for (let item of items) {
+                if (item.type.indexOf('image') === 0) files.push(item.getAsFile());
+            }
+            if (files.length > 0) handleFiles(files);
+        });
+
+        input.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        clearBtn.addEventListener('click', () => {
+            dataTransfer = new DataTransfer();
+            input.files = dataTransfer.files;
+            updatePreview();
+        });
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (file.type.startsWith('image/')) dataTransfer.items.add(file);
+            }
+            input.files = dataTransfer.files;
+            updatePreview();
+        }
+
+        function updatePreview() {
+            preview.innerHTML = '';
+            clearBtn.style.display = dataTransfer.files.length > 0 ? 'inline-block' : 'none';
+            for (let file of dataTransfer.files) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `<img src="${e.target.result}">`;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading-overlay').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
