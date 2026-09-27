@@ -105,7 +105,7 @@ def send_prompt(page, text):
 def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich):
     with sync_playwright() as p:
         browser = p.chromium.launch_persistent_context(
-            user_data_dir="browser_data",
+            user_data_dir="browser_data_8", 
             headless=False,
             args=['--disable-blink-features=AutomationControlled']
         )
