@@ -7,3 +7,18 @@ __pycache__/
 .env
 venv/
 "@ | Out-File -Encoding utf8 .gitignore
+
+
+# Playwright browser profiles (chứa cookie/session)
+browser_data_*/
+browser_data_*/
+
+# Hoặc cụ thể hơn
+browser_data_1/
+browser_data_2/
+browser_data_3/
+browser_data_4/
+browser_data_5/
+browser_data_6/
+browser_data_7/
+browser_data_8/
