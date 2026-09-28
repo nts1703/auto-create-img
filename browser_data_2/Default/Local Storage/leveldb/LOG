@@ -1,17 +1,17 @@
-2026/09/28-00:13:34.268 5a0c Reusing MANIFEST D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb/MANIFEST-000001
-2026/09/28-00:13:34.273 5a0c Recovering log #8
-2026/09/28-00:13:34.275 5a0c Reusing old log D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb/000008.log 
-2026/09/28-00:14:34.364 28d8 Level-0 table #12: started
-2026/09/28-00:14:34.370 28d8 Level-0 table #12: 20184 bytes OK
-2026/09/28-00:14:34.372 28d8 Delete type=0 #8
-2026/09/28-00:14:34.373 28d8 Compacting 4@0 + 0@1 files
-2026/09/28-00:14:34.377 28d8 Generated table #13@0: 33 keys, 15560 bytes
-2026/09/28-00:14:34.377 28d8 Compacted 4@0 + 0@1 files => 15560 bytes
-2026/09/28-00:14:34.378 28d8 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/09/28-00:14:34.378 28d8 Delete type=2 #3
-2026/09/28-00:14:34.379 28d8 Delete type=2 #6
-2026/09/28-00:14:34.379 28d8 Delete type=2 #9
-2026/09/28-00:14:34.379 28d8 Delete type=2 #12
-2026/09/28-00:15:34.927 28d8 Level-0 table #15: started
-2026/09/28-00:15:34.930 28d8 Level-0 table #15: 14440 bytes OK
-2026/09/28-00:15:34.931 28d8 Delete type=0 #11
+2026/09/29-00:39:19.334 12dc Reusing MANIFEST D:\my_ai_tool\browser_data_2\Default\Local Storage\leveldb/MANIFEST-000001
+2026/09/29-00:39:19.339 12dc Recovering log #41
+2026/09/29-00:39:19.339 12dc Level-0 table #44: started
+2026/09/29-00:39:19.344 12dc Level-0 table #44: 21646 bytes OK
+2026/09/29-00:39:19.347 12dc Delete type=0 #41
+2026/09/29-00:40:19.367 38bc Level-0 table #47: started
+2026/09/29-00:40:19.372 38bc Level-0 table #47: 13590 bytes OK
+2026/09/29-00:40:19.372 38bc Delete type=0 #45
+2026/09/29-00:40:19.373 12dc Compacting 4@0 + 1@1 files
+2026/09/29-00:40:19.376 12dc Generated table #48@0: 39 keys, 22347 bytes
+2026/09/29-00:40:19.376 12dc Compacted 4@0 + 1@1 files => 22347 bytes
+2026/09/29-00:40:19.377 12dc compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/09/29-00:40:19.377 12dc Delete type=2 #36
+2026/09/29-00:40:19.378 12dc Delete type=2 #39
+2026/09/29-00:40:19.378 12dc Delete type=2 #42
+2026/09/29-00:40:19.378 12dc Delete type=2 #44
+2026/09/29-00:40:19.378 12dc Delete type=2 #47
