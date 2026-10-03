@@ -1,3 +1,15 @@
-2026/10/01-20:55:13.100 6d7c Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/MANIFEST-000001
-2026/10/01-20:55:13.121 6d7c Recovering log #15
-2026/10/01-20:55:13.131 6d7c Reusing old log D:\LinhTinh\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/000015.log 
+2026/10/03-22:46:37.799 286c Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/03-22:46:37.825 286c Recovering log #20
+2026/10/03-22:46:37.830 286c Reusing old log D:\LinhTinh\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/000020.log 
+2026/10/03-22:47:37.871 62d4 Level-0 table #24: started
+2026/10/03-22:47:37.876 62d4 Level-0 table #24: 21656 bytes OK
+2026/10/03-22:47:37.878 62d4 Delete type=0 #20
+2026/10/03-22:47:37.879 286c Compacting 4@0 + 1@1 files
+2026/10/03-22:47:37.884 286c Generated table #25@0: 34 keys, 15457 bytes
+2026/10/03-22:47:37.884 286c Compacted 4@0 + 1@1 files => 15457 bytes
+2026/10/03-22:47:37.885 286c compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/10/03-22:47:37.885 286c Delete type=2 #14
+2026/10/03-22:47:37.886 286c Delete type=2 #16
+2026/10/03-22:47:37.886 286c Delete type=2 #18
+2026/10/03-22:47:37.886 286c Delete type=2 #21
+2026/10/03-22:47:37.886 286c Delete type=2 #24

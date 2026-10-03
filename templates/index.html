@@ -2,162 +2,403 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thay Đồ Tự Động - ChatGPT</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; background: #f4f4f4; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
-        
-        .section { margin: 25px 0; padding: 25px; border: 1px solid #eaeaea; border-radius: 10px; background: #fafafa; }
-        .section h3 { margin-top: 0; color: #10a37f; }
-        
-        /* Giao diện vùng kéo thả */
-        .dropzone {
-            border: 2px dashed #bbb;
-            border-radius: 10px;
-            padding: 30px 20px;
-            text-align: center;
-            background: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .dropzone:hover, .dropzone.dragover { border-color: #10a37f; background: #f0fcf9; }
-        .dropzone p { margin: 0; font-size: 16px; color: #666; pointer-events: none; }
-        .dropzone small { display: block; margin-top: 8px; color: #999; pointer-events: none; }
-        .dropzone input[type="file"] { display: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Ô Textbox chuyên để Paste ảnh */
-        .paste-catcher {
-            margin-top: 15px;
-            width: 80%;
-            max-width: 400px;
-            padding: 12px;
-            font-size: 14px;
-            border: 1px dashed #10a37f;
-            border-radius: 6px;
-            text-align: center;
-            background: #fafafa;
-            color: #555;
-            cursor: text;
-            transition: all 0.2s;
-        }
-        .paste-catcher:focus {
-            outline: 2px solid #10a37f;
-            background: #e8f7f3;
-            color: #000;
-        }
-        .paste-catcher::placeholder { color: #888; }
-        
-        /* Giao diện hiển thị ảnh xem trước */
-        .preview-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
-        .preview-item {
-            position: relative; width: 90px; height: 90px; border-radius: 8px;
-            overflow: hidden; border: 2px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-
-        button.submit-btn { 
-            width: 100%; padding: 16px; font-size: 18px; font-weight: bold;
-            background: #10a37f; color: white; border: none; border-radius: 8px; 
-            cursor: pointer; transition: background 0.3s; margin-top: 20px;
-        }
-        button.submit-btn:hover { background: #0d8a6a; }
-        
-        .clear-btn {
-            background: #ff4d4d; color: white; border: none; padding: 6px 12px;
-            border-radius: 4px; cursor: pointer; font-size: 13px; margin-top: 10px; display: none;
-        }
-        .clear-btn:hover { background: #cc0000; }
-
-        /* Radio buttons cho loại sản phẩm */
-        .radio-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 18px;
-            margin-top: 10px;
-        }
-        .radio-group label {
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0f14;
+            color: #e8edf2;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .header-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #1d9bf0, #0a7bc4);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
             font-size: 16px;
+            box-shadow: 0 4px 14px rgba(29,155,240,0.35);
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 650;
+            color: #f0f4f8;
+            letter-spacing: -0.3px;
+        }
+        .header h1 span { color: #1d9bf0; }
+
+        form { display: flex; flex-direction: column; gap: 14px; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .card {
+            background: #141b24;
+            border: 1px solid #243041;
+            border-radius: 14px;
+            padding: 16px 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #1d9bf0, transparent);
+            opacity: 0.5;
+        }
+        .card-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1d9bf0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card-title .dot {
+            width: 6px; height: 6px;
+            background: #1d9bf0;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #1d9bf0;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+        .chip {
+            position: relative;
             cursor: pointer;
-            padding: 8px 14px;
-            background: #fff;
-            border: 1px solid #ddd;
+        }
+        .chip input {
+            position: absolute;
+            opacity: 0;
+            width: 0; height: 0;
+        }
+        .chip span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 13px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #8b9cb3;
+            background: #0f1620;
+            border: 1px solid #2a3a4f;
             border-radius: 8px;
-            transition: all 0.2s;
+            transition: all 0.15s ease;
+            min-width: 42px;
         }
-        .radio-group label:hover {
-            border-color: #10a37f;
-            background: #f0fcf9;
+        .chip:hover span {
+            border-color: #1d9bf0;
+            color: #c5d4e8;
+            background: #152030;
         }
-        .radio-group input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #10a37f;
+        .chip input:checked + span {
+            background: rgba(29,155,240,0.15);
+            border-color: #1d9bf0;
+            color: #1d9bf0;
+            box-shadow: 0 0 0 1px rgba(29,155,240,0.25), inset 0 0 12px rgba(29,155,240,0.08);
+            font-weight: 600;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #5a6d82;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        .dropzone {
+            border: 1.5px dashed #2e4055;
+            border-radius: 10px;
+            background: #0f1620;
+            padding: 20px 14px;
+            text-align: center;
             cursor: pointer;
+            transition: all 0.2s;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: #1d9bf0;
+            background: rgba(29,155,240,0.06);
+            box-shadow: inset 0 0 20px rgba(29,155,240,0.05);
+        }
+        .dropzone .dz-icon { font-size: 22px; opacity: 0.7; }
+        .dropzone .dz-text {
+            font-size: 13px;
+            color: #8b9cb3;
+            font-weight: 500;
+        }
+        .dropzone .dz-sub {
+            font-size: 11px;
+            color: #4a5d72;
+        }
+        .dropzone input[type="file"] { display: none; }
+
+        .paste-box {
+            margin-top: 4px;
+            width: 85%;
+            max-width: 240px;
+            padding: 7px 10px;
+            font-size: 11.5px;
+            border: 1px dashed #2e4055;
+            border-radius: 6px;
+            text-align: center;
+            background: #0b0f14;
+            color: #6b7f96;
+            cursor: text;
+            transition: all 0.15s;
+        }
+        .paste-box:focus {
+            outline: none;
+            border-color: #1d9bf0;
+            color: #c5d4e8;
+            background: rgba(29,155,240,0.07);
+        }
+        .paste-box::placeholder { color: #4a5d72; }
+
+        .preview-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 10px;
+            max-height: 70px;
+            overflow-y: auto;
+        }
+        .preview-thumb {
+            width: 52px; height: 52px;
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1.5px solid #2a3a4f;
+            flex-shrink: 0;
+            transition: border-color 0.15s;
+        }
+        .preview-thumb:hover { border-color: #1d9bf0; }
+        .preview-thumb img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-clear {
+            display: none;
+            margin-top: 8px;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: #e0245e;
+            background: transparent;
+            border: 1px solid rgba(224,36,94,0.4);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-clear:hover {
+            background: rgba(224,36,94,0.12);
+            border-color: #e0245e;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            font-size: 15px;
+            font-weight: 650;
+            color: #fff;
+            background: linear-gradient(135deg, #1d9bf0 0%, #0d7ec9 100%);
+            border: none;
+            border-radius: 11px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 18px rgba(29,155,240,0.3);
+        }
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 24px rgba(29,155,240,0.4);
+            background: linear-gradient(135deg, #2aa3f5 0%, #0e8ad8 100%);
+        }
+        .btn-submit:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(29,155,240,0.25);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Progress */
+        #progress-panel { display: none; }
+        .progress-track {
+            background: #0f1620;
+            border-radius: 8px;
+            height: 10px;
+            overflow: hidden;
+            border: 1px solid #2a3a4f;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1d9bf0, #0d7ec9);
+            border-radius: 8px;
+            transition: width 0.4s ease;
+        }
+        #progress-msg {
+            font-size: 13px;
+            color: #8b9cb3;
+            margin-bottom: 10px;
+        }
+        #progress-count {
+            font-size: 12px;
+            color: #5a6d82;
+            margin-top: 8px;
+            text-align: right;
+        }
+        #result-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 40px;
+        }
+        .result-thumb {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1.5px solid #2a3a4f;
+            flex-shrink: 0;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+        .result-thumb:hover {
+            border-color: #1d9bf0;
+            transform: scale(1.03);
+        }
+        .result-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 780px) {
+            .grid-2 { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔄 Thay Đồ Tự Động bằng ChatGPT</h1>
-        
-        <form action="/process" method="post" enctype="multipart/form-data">
-            
-            <div class="section">
-                <h3>0. Loại sản phẩm (chọn 1)</h3>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" name="loai_sp" value="ao" checked>
-                        Áo
-                    </label>
-                    <label>
-                        <input type="radio" name="loai_sp" value="vay">
-                        Váy
-                    </label>
-                    <label>
-                        <input type="radio" name="loai_sp" value="quan">
-                        Quần
-                    </label>
-                    <label>
-                        <input type="radio" name="loai_sp" value="ca_set">
-                        Cả Set
-                    </label>
-                    <label>
-                        <input type="radio" name="loai_sp" value="chan_vay">
-                        Chân Váy
-                    </label>
+    <div class="app">
+        <div class="header">
+            <div class="header-icon">👕</div>
+            <h1>Thay Đồ Tự Động — <span>ChatGPT</span></h1>
+        </div>
+
+        <form action="/process" method="post" enctype="multipart/form-data" id="main-form">
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span> Loại sản phẩm</div>
+                    <div class="chips">
+                        <label class="chip"><input type="radio" name="loai_sp" value="ao" checked><span>Áo</span></label>
+                        <label class="chip"><input type="radio" name="loai_sp" value="vay"><span>Váy</span></label>
+                        <label class="chip"><input type="radio" name="loai_sp" value="quan"><span>Quần</span></label>
+                        <label class="chip"><input type="radio" name="loai_sp" value="ca_set"><span>Cả Set</span></label>
+                        <label class="chip"><input type="radio" name="loai_sp" value="chan_vay"><span>Chân Váy</span></label>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span> Browser / Tài khoản</div>
+                    <div class="chips">
+                        <label class="chip"><input type="radio" name="browser_profile" value="1" checked><span>B1</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="2"><span>B2</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="3"><span>B3</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="4"><span>B4</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="5"><span>B5</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="6"><span>B6</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="7"><span>B7</span></label>
+                        <label class="chip"><input type="radio" name="browser_profile" value="8"><span>B8</span></label>
+                    </div>
+                    <p class="hint">Bắt đầu từ Browser chọn · Hết lượt → tự chuyển tiếp</p>
                 </div>
             </div>
-            
-            <div class="section">
-                <h3>1. Ảnh mẫu (Áo/Váy tham chiếu)</h3>
-                <div class="dropzone" id="zone-mau">
-                    <p>📂 Click để chọn file hoặc kéo thả ảnh vào đây</p>
-                    <input type="text" class="paste-catcher" id="paste-mau" placeholder="🖱️ Nhấp vào ô này và ấn Ctrl+V để dán ảnh" readonly>
-                    <small>Chỉ nhận 1 ảnh</small>
-                    <input type="file" name="anh_mau" id="input-mau" accept="image/*" required>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span> 1. Ảnh mẫu</div>
+                    <div class="dropzone" id="zone-mau">
+                        <div class="dz-icon">📷</div>
+                        <div class="dz-text">Click hoặc kéo thả ảnh</div>
+                        <div class="dz-sub">Chỉ nhận 1 ảnh</div>
+                        <input type="text" class="paste-box" id="paste-mau" placeholder="Ctrl + V dán ảnh tại đây" readonly>
+                        <input type="file" name="anh_mau" id="input-mau" accept="image/*" required>
+                    </div>
+                    <div class="preview-row" id="preview-mau"></div>
                 </div>
-                <div class="preview-container" id="preview-mau"></div>
-            </div>
-            
-            <div class="section">
-                <h3>2. Danh sách ảnh cần thay đồ</h3>
-                <div class="dropzone" id="zone-danhsach">
-                    <p>📂 Click để chọn file hoặc kéo thả ảnh vào đây</p>
-                    <input type="text" class="paste-catcher" id="paste-danhsach" placeholder="🖱️ Nhấp vào ô này và ấn Ctrl+V để dán ảnh" readonly>
-                    <small>Có thể dán/chọn nhiều lần để thêm ảnh</small>
-                    <input type="file" name="danhsach_anh" id="input-danhsach" accept="image/*" multiple required>
+
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span> 2. Danh sách ảnh cần thay</div>
+                    <div class="dropzone" id="zone-danhsach">
+                        <div class="dz-icon">🖼️</div>
+                        <div class="dz-text">Click hoặc kéo thả nhiều ảnh</div>
+                        <div class="dz-sub">Có thể dán / chọn nhiều lần</div>
+                        <input type="text" class="paste-box" id="paste-danhsach" placeholder="Ctrl + V dán ảnh tại đây" readonly>
+                        <input type="file" name="danhsach_anh" id="input-danhsach" accept="image/*" multiple required>
+                    </div>
+                    <button type="button" class="btn-clear" id="clear-danhsach">✕ Xóa danh sách</button>
+                    <div class="preview-row" id="preview-danhsach"></div>
                 </div>
-                <button type="button" class="clear-btn" id="clear-danhsach">🗑️ Xóa danh sách</button>
-                <div class="preview-container" id="preview-danhsach"></div>
             </div>
-            
-            <button type="submit" class="submit-btn">🚀 BẮT ĐẦU XỬ LÝ</button>
+
+            <button type="submit" class="btn-submit" id="submit-btn">🚀  Bắt đầu xử lý</button>
+
+            <!-- Panel tiến trình -->
+            <div id="progress-panel">
+                <div class="card">
+                    <div class="card-title"><span class="dot"></span> Tiến trình</div>
+                    <div id="progress-msg">Đang khởi động...</div>
+                    <div class="progress-track">
+                        <div id="progress-bar"></div>
+                    </div>
+                    <div id="progress-count">0 / 0</div>
+                </div>
+                <div class="card" style="margin-top:10px;">
+                    <div class="card-title"><span class="dot"></span> Ảnh đã tạo</div>
+                    <div id="result-gallery"></div>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -168,108 +409,150 @@
             const preview = document.getElementById(previewId);
             const pasteBox = document.getElementById(pasteId);
             const clearBtn = clearBtnId ? document.getElementById(clearBtnId) : null;
-            
-            let dataTransfer = new DataTransfer();
+            let dt = new DataTransfer();
 
-            // 1. CLICK VÀO VÙNG TRỐNG -> Mở hộp thoại chọn file
-            zone.addEventListener('click', (e) => {
-                // Chỉ mở nếu user KHÔNG click vào ô paste
-                if (e.target !== pasteBox) {
-                    input.click();
-                }
-            });
-
-            // 2. KÉO THẢ
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                zone.classList.add('dragover');
-            });
+            zone.addEventListener('click', e => { if (e.target !== pasteBox) input.click(); });
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
             zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-            zone.addEventListener('drop', (e) => {
+            zone.addEventListener('drop', e => {
                 e.preventDefault();
                 zone.classList.remove('dragover');
-                handleFiles(e.dataTransfer.files);
+                handle(e.dataTransfer.files);
             });
 
-            // 3. DÁN VÀO Ô TEXTBOX (Ngăn việc click vào ô text làm mở file dialog)
-            pasteBox.addEventListener('click', (e) => e.stopPropagation());
-            
-            pasteBox.addEventListener('paste', (e) => {
+            pasteBox.addEventListener('click', e => e.stopPropagation());
+            pasteBox.addEventListener('paste', e => {
                 e.preventDefault();
                 const items = (e.clipboardData || window.clipboardData).items;
                 const files = [];
-                for (let item of items) {
-                    if (item.type.indexOf('image') === 0) {
-                        files.push(item.getAsFile());
-                    }
-                }
-                if (files.length > 0) {
-                    handleFiles(files);
-                    // Đổi chữ placeholder để user biết đã nhận
-                    pasteBox.placeholder = "✅ Đã nhận ảnh! Dán thêm hoặc xem bên dưới";
-                    setTimeout(() => {
-                        pasteBox.placeholder = "🖱️ Nhấp vào ô này và ấn Ctrl+V để dán ảnh";
-                    }, 2000);
-                } else {
-                    alert("Không tìm thấy ảnh trong Clipboard. Vui lòng copy lại!");
-                }
+                for (let it of items) if (it.type.startsWith('image/')) files.push(it.getAsFile());
+                if (files.length) {
+                    handle(files);
+                    pasteBox.placeholder = '✅ Đã nhận ảnh!';
+                    setTimeout(() => pasteBox.placeholder = 'Ctrl + V dán ảnh tại đây', 1600);
+                } else alert('Không tìm thấy ảnh trong Clipboard!');
             });
 
-            // 4. CHỌN FILE TỪ DIALOG
-            input.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
+            input.addEventListener('change', e => handle(e.target.files));
+            if (clearBtn) clearBtn.addEventListener('click', () => {
+                dt = new DataTransfer();
+                input.files = dt.files;
+                render();
             });
 
-            // 5. NÚT XÓA DANH SÁCH
-            if (clearBtn) {
-                clearBtn.addEventListener('click', () => {
-                    dataTransfer = new DataTransfer();
-                    input.files = dataTransfer.files;
-                    updatePreview();
-                });
-            }
-
-            // Xử lý dữ liệu file
-            function handleFiles(files) {
-                if (files.length === 0) return;
-
+            function handle(files) {
+                if (!files?.length) return;
                 if (!isMultiple) {
-                    dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(files[0]);
+                    dt = new DataTransfer();
+                    dt.items.add(files[0]);
                 } else {
-                    for (let file of files) {
-                        if (file.type.startsWith('image/')) {
-                            dataTransfer.items.add(file);
-                        }
-                    }
+                    for (let f of files) if (f.type.startsWith('image/')) dt.items.add(f);
                 }
-
-                input.files = dataTransfer.files;
-                updatePreview();
+                input.files = dt.files;
+                render();
             }
 
-            // Hiển thị ảnh
-            function updatePreview() {
+            function render() {
                 preview.innerHTML = '';
-                if (clearBtn) {
-                    clearBtn.style.display = dataTransfer.files.length > 0 ? 'inline-block' : 'none';
-                }
-
-                for (let file of dataTransfer.files) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const div = document.createElement('div');
-                        div.className = 'preview-item';
-                        div.innerHTML = `<img src="${e.target.result}" alt="preview">`;
-                        preview.appendChild(div);
+                if (clearBtn) clearBtn.style.display = dt.files.length ? 'inline-block' : 'none';
+                for (let f of dt.files) {
+                    const r = new FileReader();
+                    r.onload = e => {
+                        const d = document.createElement('div');
+                        d.className = 'preview-thumb';
+                        d.innerHTML = `<img src="${e.target.result}">`;
+                        preview.appendChild(d);
                     };
-                    reader.readAsDataURL(file);
+                    r.readAsDataURL(f);
                 }
             }
         }
 
         setupDropzone('zone-mau', 'input-mau', 'preview-mau', 'paste-mau', false);
         setupDropzone('zone-danhsach', 'input-danhsach', 'preview-danhsach', 'paste-danhsach', true, 'clear-danhsach');
+
+        // ===== Submit AJAX + Progress =====
+        const form = document.getElementById('main-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const panel = document.getElementById('progress-panel');
+        const bar = document.getElementById('progress-bar');
+        const msg = document.getElementById('progress-msg');
+        const countEl = document.getElementById('progress-count');
+        const gallery = document.getElementById('result-gallery');
+
+        let pollTimer = null;
+        const shownImages = new Set();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (submitBtn.disabled) return;
+
+            const fd = new FormData(form);
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Đang chạy...';
+            panel.style.display = 'block';
+            gallery.innerHTML = '';
+            shownImages.clear();
+            bar.style.width = '0%';
+            msg.textContent = 'Đang khởi động...';
+            countEl.textContent = '0 / 0';
+
+            try {
+                const res = await fetch('/process', { method: 'POST', body: fd });
+                const data = await res.json();
+                if (!data.ok) {
+                    alert(data.error || 'Lỗi');
+                    resetBtn();
+                    return;
+                }
+                countEl.textContent = `0 / ${data.total}`;
+                startPolling();
+            } catch (err) {
+                alert('Lỗi kết nối: ' + err.message);
+                resetBtn();
+            }
+        });
+
+        function startPolling() {
+            if (pollTimer) clearInterval(pollTimer);
+            pollTimer = setInterval(fetchStatus, 2000);
+            fetchStatus();
+        }
+
+        async function fetchStatus() {
+            try {
+                const res = await fetch('/status');
+                const s = await res.json();
+
+                msg.textContent = s.message || '...';
+                const pct = s.total > 0 ? Math.round((s.current / s.total) * 100) : 0;
+                bar.style.width = pct + '%';
+                countEl.textContent = `${s.current} / ${s.total}`;
+
+                (s.images || []).forEach(rel => {
+                    if (shownImages.has(rel)) return;
+                    shownImages.add(rel);
+                    const wrap = document.createElement('div');
+                    wrap.className = 'result-thumb';
+                    wrap.innerHTML = `<a href="/ketqua/${rel}" target="_blank"><img src="/ketqua/${rel}" alt="result"></a>`;
+                    gallery.appendChild(wrap);
+                });
+
+                if (s.status === 'done' || s.status === 'error') {
+                    clearInterval(pollTimer);
+                    pollTimer = null;
+                    resetBtn();
+                    if (s.status === 'done') msg.textContent = s.message || 'Hoàn thành!';
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        function resetBtn() {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '🚀  Bắt đầu xử lý';
+        }
     </script>
 </body>
 </html>
