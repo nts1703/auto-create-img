@@ -1,5 +1,8 @@
-2026/09/29-00:15:15.465 64a4 Reusing MANIFEST D:\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/MANIFEST-000001
-2026/09/29-00:15:15.474 64a4 Recovering log #7
-2026/09/29-00:15:15.479 64a4 Level-0 table #9: started
-2026/09/29-00:15:15.489 64a4 Level-0 table #9: 12974 bytes OK
-2026/09/29-00:15:15.492 64a4 Delete type=0 #7
+2026/10/02-07:50:13.239 591c Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_4\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/02-07:50:13.255 591c Recovering log #15
+2026/10/02-07:50:13.256 591c Level-0 table #18: started
+2026/10/02-07:50:13.262 591c Level-0 table #18: 17501 bytes OK
+2026/10/02-07:50:13.265 591c Delete type=0 #15
+2026/10/02-07:51:13.278 696c Level-0 table #21: started
+2026/10/02-07:51:13.284 696c Level-0 table #21: 14318 bytes OK
+2026/10/02-07:51:13.285 696c Delete type=0 #19

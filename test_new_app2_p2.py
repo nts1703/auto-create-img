@@ -32,13 +32,18 @@ PROMPT_PHAN_TICH_CHAN_VAY = "Hãy phân tích chi tiết chân váy trong ảnh 
 PROMPT_CHINH_SUA_DAU = "Hãy chỉnh sửa ảnh này để người trong ảnh mặc đúng bộ đồ mà bạn vừa phân tích ở tin nhắn trước. Giữ nguyên tư thế, gương mặt, ánh sáng, background và chất lượng ảnh gốc. Chỉ thay đổi trang phục. độ nét 4k"
 PROMPT_TUONG_TU = "Hãy chỉnh sửa ảnh này để người trong ảnh mặc đúng bộ đồ mà bạn vừa phân tích ở tin nhắn trước. Giữ nguyên tư thế, gương mặt, ánh sáng, background và chất lượng ảnh gốc. Chỉ thay đổi trang phục. độ nét 4k"
 
-# Selector bao quát cả nút Share trên ảnh lẫn nút Share ở thanh công cụ dưới tin nhắn
-RESULT_SELECTOR = (
+# ===== SELECTOR CÁCH A (đã test thành công) =====
+SHARE_ON_IMAGE = (
     'button[aria-label="Chia sẻ hình ảnh này"], '
     'button[aria-label*="Chia sẻ hình ảnh"], '
-    'button[aria-label*="Share this image"], '
-    'button[aria-label="Chia sẻ"], '
-    'button[aria-label*="Share"]'
+    'button[aria-label*="Share this image"]'
+)
+
+DOWNLOAD_IN_MENU = (
+    'button.interactive-button:has-text("Tải xuống"), '
+    'button:has-text("Tải xuống"), '
+    'button:has-text("Download"), '
+    'div[role="menuitem"]:has-text("Tải xuống")'
 )
 
 LIMIT_TEXTS = [
@@ -52,58 +57,50 @@ LIMIT_TEXTS = [
 
 
 def get_today_output_folder(base_folder='ketqua'):
-    """Tạo thư mục lưu ảnh theo ngày: ketqua/YYYY-MM-DD/"""
     today_str = datetime.now().strftime("%Y-%m-%d")
     folder_path = os.path.join(base_folder, today_str)
     os.makedirs(folder_path, exist_ok=True)
     return folder_path
 
 
-def download_latest_generated_image(page, output_dir, image_index):
-    """Thao tác bấm nút Share -> Bấm Tải xuống -> Lưu file về dự án"""
+def get_share_count(page):
+    """Đếm số nút Share trên ảnh hiện có trên trang"""
     try:
-        last_assistant_turn = page.locator('article, div[data-message-author-role="assistant"]').last
-        if not last_assistant_turn.is_visible():
+        return page.locator(SHARE_ON_IMAGE).count()
+    except Exception:
+        return 0
+
+
+def download_latest_generated_image(page, output_dir, image_index):
+    """
+    Cách A: Click Share trên ảnh → JS click Tải xuống → Lưu file
+    """
+    try:
+        share_btn = page.locator(SHARE_ON_IMAGE).last
+        if not share_btn.is_visible(timeout=5000):
+            print("   ⚠️ Không tìm thấy nút Share trên ảnh")
             return False
 
-        # Thử hover nhẹ vào ảnh để hiện nút (nếu bị ẩn)
-        try:
-            img_el = last_assistant_turn.locator('img').last
-            if img_el.count() > 0 and img_el.is_visible():
-                img_el.hover(timeout=1000)
-                page.wait_for_timeout(300)
-        except Exception:
-            pass
-
-        share_btn = last_assistant_turn.locator(RESULT_SELECTOR).last
-        if not share_btn.is_visible(timeout=3000):
-            print("   ⚠️️ Không tìm thấy nút Chia sẻ trong tin nhắn mới nhất")
-            return False
-
-        print("   📤 Đã nhấn nút Chia sẻ, chờ menu mở...")
+        print("   📤 Đã thấy nút Share trên ảnh, đang click...")
         share_btn.click(force=True)
-        page.wait_for_timeout(800)
+        page.wait_for_timeout(1500)
 
-        # Bấm nút Tải xuống
-        download_btn = page.locator(
-            'button.interactive-button:has-text("Tải xuống"), '
-            'button:has-text("Tải xuống"), '
-            'button:has-text("Download"), '
-            'div[role="menuitem"]:has-text("Tải xuống")'
-        ).last
-
-        if not download_btn.is_visible(timeout=3000):
+        download_btn = page.locator(DOWNLOAD_IN_MENU).last
+        if not download_btn.is_visible(timeout=6000):
             print("   ⚠️ Không thấy nút Tải xuống trong menu")
-            page.keyboard.press("Escape")
+            try:
+                page.keyboard.press("Escape")
+            except:
+                pass
             return False
 
+        print("   📥 Đang click Tải xuống (JS click)...")
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         file_name = f"anh_tao_{image_index:02d}_{timestamp}.png"
         save_path = os.path.join(output_dir, file_name)
 
-        print("   📥 Đang tải file...")
         with page.expect_download(timeout=15000) as download_info:
-            download_btn.click(force=True)
+            download_btn.evaluate("el => el.click()")
 
         download = download_info.value
         download.save_as(save_path)
@@ -112,23 +109,20 @@ def download_latest_generated_image(page, output_dir, image_index):
         page.wait_for_timeout(500)
         try:
             page.keyboard.press("Escape")
-        except Exception:
+        except:
             pass
-
         return True
 
     except Exception as e:
-        print(f"   ⚠️ Lỗi trong quá trình tải ảnh: {e}")
+        print(f"   ⚠️ Lỗi tải ảnh: {e}")
         try:
             page.keyboard.press("Escape")
-        except Exception:
+        except:
             pass
-
-    return False
+        return False
 
 
 def is_limit_reached(page):
-    """Kiểm tra thông báo hết lượt"""
     try:
         alert_selectors = [
             '[role="alert"]',
@@ -149,14 +143,12 @@ def is_limit_reached(page):
             last_text = last_turn.inner_text().lower()
             if any(limit_txt.lower() in last_text for limit_txt in LIMIT_TEXTS):
                 return True
-
         return False
     except Exception:
         return False
 
 
 def dismiss_popups(page):
-    """Tự động đóng popup"""
     close_selectors = [
         'button[data-testid="close-button"]',
         'button[aria-label="Đóng"]',
@@ -171,8 +163,7 @@ def dismiss_popups(page):
     for sel in close_selectors:
         try:
             btns = page.locator(sel)
-            count = btns.count()
-            for i in range(count):
+            for i in range(btns.count()):
                 btn = btns.nth(i)
                 if btn.is_visible():
                     btn.click(force=True, timeout=2000)
@@ -207,7 +198,6 @@ def wait_for_text_generation(page, step_name=""):
 def upload_image(page, image_path, is_first=False):
     filename = os.path.basename(image_path)
     print(f"   📸 Đang attach ảnh: {filename}")
-
     try:
         page.locator('#prompt-textarea').click(force=True, timeout=5000)
         page.wait_for_timeout(400)
@@ -315,6 +305,7 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich):
     total_images = len(list_anh_paths)
     current_idx = 0
     profile_idx = 0
+    downloaded_indices = set()  # Theo dõi ảnh đã tải thành công → tránh trùng
 
     today_folder = get_today_output_folder(app.config['KETQUA_FOLDER'])
 
@@ -337,61 +328,69 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich):
                 dismiss_popups(page)
 
                 while current_idx < total_images:
+                    # Bỏ qua ảnh đã tải thành công rồi
+                    if current_idx in downloaded_indices:
+                        current_idx += 1
+                        continue
+
                     anh_path = list_anh_paths[current_idx]
                     print(f"\n=== PROFILE {profile_idx + 1} | Ảnh {current_idx + 1}/{total_images} ===")
                     dismiss_popups(page)
+
+                    # Đếm số Share TRƯỚC khi gửi (để phát hiện ảnh MỚI)
+                    share_count_before = get_share_count(page)
 
                     if not upload_image(page, anh_path):
                         print(f"   ⚠️ Upload ảnh {current_idx + 1} thất bại → bỏ qua")
                         current_idx += 1
                         continue
 
-                    # Đếm số lượng tin nhắn Assistant TRƯỚC KHI gửi prompt
-                    initial_assistant_count = page.locator('article, div[data-message-author-role="assistant"]').count()
-
                     prompt = PROMPT_CHINH_SUA_DAU if current_idx == 0 else PROMPT_TUONG_TU
                     send_prompt(page, prompt)
 
-                    print(f"   ⏳ Đang chờ GPT vẽ ảnh (tối đa 3 phút)...")
+                    print(f"   ⏳ Đang chờ GPT vẽ ảnh mới (tối đa 3 phút)...")
                     start_time = time.time()
                     timeout_seconds = 180
                     check_interval = 3
                     switched_due_to_limit = False
+                    image_downloaded = False
 
-                    # Đợi 8s ban đầu để GPT chuẩn bị tạo turn mới
+                    # Chờ tối thiểu 8s rồi mới bắt đầu kiểm tra
                     page.wait_for_timeout(8000)
 
                     while time.time() - start_time < timeout_seconds:
-                        try:
-                            assistant_turns = page.locator('article, div[data-message-author-role="assistant"]')
-                            current_assistant_count = assistant_turns.count()
-
-                            # Chỉ kiểm tra nút Share trong tin nhắn Assistant MỚI NHẤT
-                            if current_assistant_count > initial_assistant_count:
-                                last_turn = assistant_turns.last
-                                share_btn = last_turn.locator(RESULT_SELECTOR).last
-
-                                if share_btn.is_visible():
-                                    print("   ✅ Đã phát hiện nút Share ở ảnh mới! Bắt đầu tải...")
-                                    page.wait_for_timeout(1000)
-                                    if download_latest_generated_image(page, today_folder, current_idx + 1):
-                                        current_idx += 1
-                                        dismiss_popups(page)
-                                        break
-                        except Exception:
-                            pass
-
+                        # 1. Kiểm tra hết lượt TRƯỚC
                         if is_limit_reached(page):
                             print(f"\n🚫 PHÁT HIỆN HẾT LƯỢT ở Profile {profile_idx + 1}")
-                            print(f"   → Đã hoàn thành {current_idx}/{total_images} ảnh")
-                            print(f"   → Chờ 3 giây rồi chuyển sang Profile {profile_idx + 2}...")
+                            print(f"   → Đã hoàn thành {len(downloaded_indices)}/{total_images} ảnh")
+                            print(f"   → Chuyển sang Profile {profile_idx + 2}...")
                             page.wait_for_timeout(3000)
                             switched_due_to_limit = True
                             break
 
+                        # 2. Kiểm tra có Share MỚI xuất hiện không
+                        try:
+                            share_count_now = get_share_count(page)
+                            if share_count_now > share_count_before:
+                                print("   ✅ Phát hiện nút Share MỚI! Bắt đầu tải...")
+                                page.wait_for_timeout(1500)
+
+                                if download_latest_generated_image(page, today_folder, current_idx + 1):
+                                    downloaded_indices.add(current_idx)
+                                    image_downloaded = True
+                                    current_idx += 1
+                                    dismiss_popups(page)
+                                    break
+                                else:
+                                    print("   ⚠️ Tải thất bại, sẽ thử lại ở vòng sau hoặc bỏ qua")
+                                    break
+                        except Exception:
+                            pass
+
                         page.wait_for_timeout(check_interval * 1000)
                     else:
-                        print(f"   ⚠️ Timeout 3 phút → bỏ qua ảnh này")
+                        # Hết 3 phút
+                        print(f"   ⚠️ Timeout 3 phút → bỏ qua ảnh {current_idx + 1}")
                         current_idx += 1
                         try:
                             page.locator('button[aria-label*="Stop"], button[aria-label*="Dừng"]').first.click(timeout=3000)
@@ -401,6 +400,11 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich):
 
                     if switched_due_to_limit:
                         break
+
+                    # ===== DELAY TỐI THIỂU 15 GIÂY giữa 2 lần gửi prompt =====
+                    if current_idx < total_images and not switched_due_to_limit:
+                        print("   ⏳ Chờ 15 giây trước khi gửi ảnh tiếp theo...")
+                        page.wait_for_timeout(15000)
 
             finally:
                 try:
@@ -413,10 +417,10 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich):
             else:
                 break
 
-    if current_idx >= total_images:
+    if len(downloaded_indices) >= total_images:
         print("\n🎉 HOÀN THÀNH TOÀN BỘ ẢNH!")
     else:
-        print(f"\n⚠️️ Đã dùng hết 8 profile. Mới xong {current_idx}/{total_images} ảnh.")
+        print(f"\n⚠️ Đã dùng hết profile hoặc còn ảnh chưa xong. Đã tải: {len(downloaded_indices)}/{total_images} ảnh.")
 
 
 @app.route('/')

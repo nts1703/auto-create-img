@@ -1,20 +1,14 @@
-2026/09/30-11:59:47.309 7664 Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_1\Default\Local Storage\leveldb/MANIFEST-000001
-2026/09/30-11:59:47.315 7664 Recovering log #63
-2026/09/30-11:59:47.316 7664 Level-0 table #66: started
-2026/09/30-11:59:47.320 7664 Level-0 table #66: 28549 bytes OK
-2026/09/30-11:59:47.323 7664 Delete type=0 #63
-2026/09/30-12:00:47.334 44c8 Level-0 table #69: started
-2026/09/30-12:00:47.337 44c8 Level-0 table #69: 13805 bytes OK
-2026/09/30-12:00:47.338 44c8 Delete type=0 #67
-2026/09/30-12:00:47.338 7664 Compacting 4@0 + 1@1 files
-2026/09/30-12:00:47.342 7664 Generated table #70@0: 41 keys, 24156 bytes
-2026/09/30-12:00:47.342 7664 Compacted 4@0 + 1@1 files => 24156 bytes
-2026/09/30-12:00:47.342 7664 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/09/30-12:00:47.343 7664 Delete type=2 #59
-2026/09/30-12:00:47.343 7664 Delete type=2 #61
-2026/09/30-12:00:47.343 7664 Delete type=2 #64
-2026/09/30-12:00:47.343 7664 Delete type=2 #66
-2026/09/30-12:00:47.343 7664 Delete type=2 #69
-2026/09/30-12:01:49.251 44c8 Level-0 table #72: started
-2026/09/30-12:01:49.255 44c8 Level-0 table #72: 13590 bytes OK
-2026/09/30-12:01:49.256 44c8 Delete type=0 #68
+2026/10/02-07:47:59.096 7fe4 Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_1\Default\Local Storage\leveldb/MANIFEST-000001
+2026/10/02-07:47:59.100 7fe4 Recovering log #88
+2026/10/02-07:47:59.101 7fe4 Level-0 table #91: started
+2026/10/02-07:47:59.108 7fe4 Level-0 table #91: 19974 bytes OK
+2026/10/02-07:47:59.113 7fe4 Delete type=0 #88
+2026/10/02-07:47:59.114 2820 Compacting 4@0 + 1@1 files
+2026/10/02-07:47:59.121 2820 Generated table #93@0: 41 keys, 24226 bytes
+2026/10/02-07:47:59.121 2820 Compacted 4@0 + 1@1 files => 24226 bytes
+2026/10/02-07:47:59.122 2820 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/10/02-07:47:59.122 2820 Delete type=2 #82
+2026/10/02-07:47:59.122 2820 Delete type=2 #84
+2026/10/02-07:47:59.122 2820 Delete type=2 #86
+2026/10/02-07:47:59.122 2820 Delete type=2 #89
+2026/10/02-07:47:59.122 2820 Delete type=2 #91
