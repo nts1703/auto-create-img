@@ -1,3 +1,35 @@
-2026/10/03-09:54:48.588 514 Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_2\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/MANIFEST-000001
-2026/10/03-09:54:48.588 514 Recovering log #3
-2026/10/03-09:54:48.589 514 Reusing old log D:\LinhTinh\my_ai_tool\browser_data_2\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/000003.log 
+2026/10/04-23:09:15.177 68e8 Reusing MANIFEST D:\LinhTinh\my_ai_tool\browser_data_2\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/10/04-23:09:15.179 68e8 Recovering log #569
+2026/10/04-23:09:15.181 68e8 Reusing old log D:\LinhTinh\my_ai_tool\browser_data_2\Default\IndexedDB\https_chatgpt.com_0.indexeddb.leveldb/000569.log 
+2026/10/04-23:09:15.495 2870 Compacting 1@1 + 1@2 files
+2026/10/04-23:09:15.499 2870 Generated table #573@1: 72 keys, 60403 bytes
+2026/10/04-23:09:15.499 2870 Compacted 1@1 + 1@2 files => 60403 bytes
+2026/10/04-23:09:15.499 2870 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/10/04-23:09:15.502 2870 Level-0 table #575: started
+2026/10/04-23:09:15.511 2870 Level-0 table #575: 4178636 bytes OK
+2026/10/04-23:09:15.512 2870 Delete type=2 #559
+2026/10/04-23:09:15.512 2870 Delete type=0 #569
+2026/10/04-23:09:15.512 2870 Delete type=2 #571
+2026/10/04-23:09:16.588 2870 Level-0 table #577: started
+2026/10/04-23:09:16.598 2870 Level-0 table #577: 4195902 bytes OK
+2026/10/04-23:09:16.599 2870 Delete type=0 #574
+2026/10/04-23:09:17.663 2870 Level-0 table #579: started
+2026/10/04-23:09:17.672 2870 Level-0 table #579: 4197665 bytes OK
+2026/10/04-23:09:17.673 2870 Delete type=0 #576
+2026/10/04-23:09:18.773 2870 Level-0 table #581: started
+2026/10/04-23:09:18.782 2870 Level-0 table #581: 4194326 bytes OK
+2026/10/04-23:09:18.783 2870 Delete type=0 #578
+2026/10/04-23:09:19.562 68e8 Compacting 3@0 + 1@1 files
+2026/10/04-23:09:19.574 68e8 Generated table #582@0: 1146 keys, 69568 bytes
+2026/10/04-23:09:19.574 68e8 Compacted 3@0 + 1@1 files => 69568 bytes
+2026/10/04-23:09:19.574 68e8 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/10/04-23:09:19.575 68e8 Delete type=2 #575
+2026/10/04-23:09:19.575 68e8 Delete type=2 #577
+2026/10/04-23:09:19.575 68e8 Delete type=2 #579
+2026/10/04-23:09:19.575 68e8 Delete type=2 #581
+2026/10/04-23:09:19.904 2870 Level-0 table #584: started
+2026/10/04-23:09:19.916 2870 Level-0 table #584: 4196097 bytes OK
+2026/10/04-23:09:19.918 2870 Delete type=0 #580
+2026/10/04-23:09:21.059 2870 Level-0 table #586: started
+2026/10/04-23:09:21.104 2870 Level-0 table #586: 4195634 bytes OK
+2026/10/04-23:09:21.108 2870 Delete type=0 #583

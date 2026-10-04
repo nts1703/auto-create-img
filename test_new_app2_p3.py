@@ -81,7 +81,8 @@ LIMIT_TEXTS = [
     "Bạn đã đạt giới hạn yêu cầu tạo ảnh của gói Free."
 ]
 
-# Selector chip/ảnh đã đính kèm trong composer
+STOP_BTN_SELECTOR = 'button[aria-label*="Stop"], button[aria-label*="Dừng"], button[aria-label*="Tạm dừng"]'
+
 ATTACH_CHIP_SELECTOR = (
     'button[aria-label*="Remove"], button[aria-label*="Xóa"], '
     'button[aria-label*="Remove file"], button[aria-label*="Xóa tệp"], '
@@ -99,7 +100,6 @@ def get_today_output_folder(base_folder='ketqua'):
 
 
 def get_attach_count(page):
-    """Đếm số chip/ảnh đang đính kèm trong composer."""
     try:
         return page.locator(ATTACH_CHIP_SELECTOR).count()
     except Exception:
@@ -215,9 +215,7 @@ def dismiss_popups(page):
 
 
 def start_new_chat(page):
-    """Mở chat mới để tránh lẫn ngữ cảnh / ảnh cũ."""
     try:
-        # Thử các selector nút New chat phổ biến
         new_chat_selectors = [
             'a[href="/"]',
             'button:has-text("Chat mới")',
@@ -239,7 +237,6 @@ def start_new_chat(page):
             except Exception:
                 continue
 
-        # Fallback: vào thẳng URL chat mới
         page.goto("https://chatgpt.com/", wait_until="domcontentloaded")
         page.wait_for_timeout(2000)
         dismiss_popups(page)
@@ -252,36 +249,59 @@ def start_new_chat(page):
 
 def wait_for_text_generation(page, step_name=""):
     print(f"   ⏳ Đang chờ GPT xử lý {step_name}...")
-    stop_btn_selector = 'button[aria-label*="Stop"], button[aria-label*="Dừng"]'
     try:
-        page.wait_for_selector(stop_btn_selector, timeout=10000)
+        page.wait_for_selector(STOP_BTN_SELECTOR, timeout=10000)
     except Exception:
         pass
     try:
-        page.wait_for_selector(stop_btn_selector, state="detached", timeout=180000)
+        page.wait_for_selector(STOP_BTN_SELECTOR, state="detached", timeout=180000)
         print(f"   ✅ Hoàn thành {step_name}")
         page.wait_for_timeout(2000)
     except Exception:
         print(f"   ⚠️ GPT có thể bị kẹt. Đang ép dừng...")
         try:
-            page.locator(stop_btn_selector).first.click(timeout=5000)
+            page.locator(STOP_BTN_SELECTOR).first.click(timeout=5000)
             page.wait_for_timeout(2000)
         except Exception:
             pass
 
 
+def wait_for_image_generation_done(page, timeout_ms=180000):
+    """
+    Nhận biết GPT đã xuất ảnh xong bằng: nút Tạm dừng/Stop không còn nữa.
+    Trả về True nếu xong, False nếu timeout / lỗi.
+    """
+    print("   ⏳ Đang chờ GPT vẽ ảnh (chờ nút Tạm dừng biến mất)...")
+    try:
+        # Chờ nút Stop xuất hiện (đang generate)
+        try:
+            page.wait_for_selector(STOP_BTN_SELECTOR, timeout=15000)
+            print("   ▶️ Đã thấy nút Tạm dừng — GPT đang xử lý...")
+        except Exception:
+            print("   ⚠️ Không thấy nút Tạm dừng xuất hiện (có thể generate quá nhanh)")
+
+        # Chờ nút Stop biến mất = generate xong
+        page.wait_for_selector(STOP_BTN_SELECTOR, state="detached", timeout=timeout_ms)
+        print("   ✅ Nút Tạm dừng đã biến mất — GPT đã xong")
+        page.wait_for_timeout(2000)  # UI cập nhật ảnh / nút Share
+        return True
+    except Exception as e:
+        print(f"   ⚠️ Timeout / lỗi chờ nút Tạm dừng: {e}")
+        try:
+            page.locator(STOP_BTN_SELECTOR).first.click(timeout=3000)
+            page.wait_for_timeout(2000)
+        except Exception:
+            pass
+        return False
+
+
 def upload_image(page, image_path, is_first=False):
-    """
-    Upload 1 ảnh.
-    Xác nhận thành công bằng: số chip SAU > số chip TRƯỚC (tránh nhận nhầm chip ảnh cũ).
-    """
     filename = os.path.basename(image_path)
     print(f"   📸 Đang attach ảnh: {filename}")
 
     count_before = get_attach_count(page)
 
     def wait_attach_increased(timeout_ms=15000):
-        """Chờ số chip/ảnh tăng so với trước khi upload."""
         deadline = time.time() + (timeout_ms / 1000.0)
         while time.time() < deadline:
             now = get_attach_count(page)
@@ -307,7 +327,6 @@ def upload_image(page, image_path, is_first=False):
     # ----- Cách mới -----
     try:
         print("   🔄 Chuyển sang cách upload mới...")
-        # Đóng menu nếu đang mở
         try:
             page.keyboard.press("Escape")
             page.wait_for_timeout(300)
@@ -335,14 +354,12 @@ def upload_image(page, image_path, is_first=False):
             page.wait_for_timeout(1000)
             return True
 
-        # Fallback: set file OK + nghỉ — nhiều khi UI đã hiện nhưng selector chip khác
         page.wait_for_timeout(2500)
         now = get_attach_count(page)
         if now > count_before:
             print(f"   ✅ Attach OK (fallback đếm chip): {filename}")
             return True
 
-        # Fallback cuối: form có thêm img
         imgs = page.locator('form img, main form img').count()
         if imgs > 0:
             print(f"   ✅ Attach OK (fallback thấy {imgs} img trong form): {filename}")
@@ -438,7 +455,7 @@ def safe_close_browser(browser):
             browser.close()
     except Exception as e:
         print(f"   ⚠️ Lỗi đóng browser: {e}")
-    time.sleep(1.5)  # tránh Directory is locked khi mở profile khác/sau
+    time.sleep(1.5)
 
 
 def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich, start_profile_idx=0):
@@ -470,7 +487,6 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich, start
             try:
                 browser, page = open_browser(p, profile_path)
 
-                # ===== Chat mới + Ảnh mẫu =====
                 print(f"\n=== PROFILE {profile_idx + 1} | Gửi lại Ảnh mẫu ===")
                 update_progress(message=f"Browser {profile_idx + 1}: Chat mới + ảnh mẫu...")
                 start_new_chat(page)
@@ -487,7 +503,6 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich, start
                 wait_for_text_generation(page, "Ảnh mẫu")
                 dismiss_popups(page)
 
-                # ===== Từng ảnh cần chỉnh =====
                 while current_idx < total_images:
                     if current_idx in downloaded_indices:
                         current_idx += 1
@@ -500,8 +515,6 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich, start
                     )
                     dismiss_popups(page)
 
-                    share_count_before = get_share_count(page)
-
                     if not upload_image(page, anh_path):
                         print(f"   ⚠️ Upload ảnh {current_idx + 1} thất bại → bỏ qua")
                         current_idx += 1
@@ -510,15 +523,23 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich, start
                     prompt = PROMPT_CHINH_SUA_DAU if current_idx == 0 else PROMPT_TUONG_TU
                     send_prompt(page, prompt)
 
-                    print(f"   ⏳ Đang chờ GPT vẽ ảnh mới (tối đa 3 phút)...")
-                    start_time = time.time()
-                    timeout_seconds = 180
-                    check_interval = 3
+                    # ===== NHẬN BIẾT ẢNH XONG: nút Tạm dừng biến mất =====
                     switched_due_to_limit = False
 
-                    page.wait_for_timeout(8000)
+                    # Trong lúc chờ, thỉnh thoảng kiểm tra hết lượt
+                    gen_done = False
+                    wait_start = time.time()
+                    max_wait = 180  # giây
 
-                    while time.time() - start_time < timeout_seconds:
+                    # Chờ Stop xuất hiện (ngắn)
+                    try:
+                        page.wait_for_selector(STOP_BTN_SELECTOR, timeout=15000)
+                        print("   ▶️ Đã thấy nút Tạm dừng — GPT đang vẽ...")
+                    except Exception:
+                        print("   ⚠️ Không thấy nút Tạm dừng (có thể xong quá nhanh)")
+
+                    # Chờ Stop biến mất, đồng thời check limit
+                    while time.time() - wait_start < max_wait:
                         if is_limit_reached(page):
                             print(f"\n🚫 HẾT LƯỢT ở Profile {profile_idx + 1}")
                             update_progress(message=f"Hết lượt Browser {profile_idx + 1} → chuyển tiếp...")
@@ -527,47 +548,56 @@ def run_chatgpt_automation(anh_mau_path, list_anh_paths, prompt_phan_tich, start
                             break
 
                         try:
-                            share_count_now = get_share_count(page)
-                            if share_count_now > share_count_before:
-                                print("   ✅ Phát hiện Share MỚI! Đang tải...")
-                                page.wait_for_timeout(1500)
-
-                                rel = download_latest_generated_image(
-                                    page, today_folder, today_str, current_idx + 1
-                                )
-                                if rel:
-                                    downloaded_indices.add(current_idx)
-                                    add_progress_image(rel)
-                                    update_progress(
-                                        message=f"Đã tải ảnh {current_idx + 1}/{total_images}"
-                                    )
-                                    current_idx += 1
-                                    dismiss_popups(page)
-                                    break
-                                else:
-                                    print("   ⚠️ Tải thất bại")
+                            # Còn nút Stop không?
+                            still_stopping = page.locator(STOP_BTN_SELECTOR).count() > 0
+                            if not still_stopping:
+                                # Đảm bảo đã từng generate một chút (tránh false positive ngay sau send)
+                                if time.time() - wait_start > 3:
+                                    print("   ✅ Nút Tạm dừng đã biến mất — GPT đã xong")
+                                    gen_done = True
+                                    page.wait_for_timeout(2000)
                                     break
                         except Exception:
                             pass
 
-                        page.wait_for_timeout(check_interval * 1000)
+                        page.wait_for_timeout(1500)
                     else:
-                        print(f"   ⚠️ Timeout → bỏ qua ảnh {current_idx + 1}")
+                        print(f"   ⚠️ Timeout 3 phút chờ nút Tạm dừng → bỏ qua ảnh {current_idx + 1}")
                         current_idx += 1
                         try:
-                            page.locator(
-                                'button[aria-label*="Stop"], button[aria-label*="Dừng"]'
-                            ).first.click(timeout=3000)
+                            page.locator(STOP_BTN_SELECTOR).first.click(timeout=3000)
                             page.wait_for_timeout(1500)
                         except Exception:
                             pass
+                        if current_idx < total_images:
+                            print("   ⏳ Chờ 5 giây...")
+                            page.wait_for_timeout(5000)
+                        continue
 
                     if switched_due_to_limit:
                         break
 
+                    # Generate xong → tải ảnh
+                    if gen_done:
+                        print("   📥 Đang tải ảnh kết quả...")
+                        rel = download_latest_generated_image(
+                            page, today_folder, today_str, current_idx + 1
+                        )
+                        if rel:
+                            downloaded_indices.add(current_idx)
+                            add_progress_image(rel)
+                            update_progress(
+                                message=f"Đã tải ảnh {current_idx + 1}/{total_images}"
+                            )
+                            current_idx += 1
+                            dismiss_popups(page)
+                        else:
+                            print("   ⚠️ Tải thất bại → bỏ qua ảnh này")
+                            current_idx += 1
+
                     if current_idx < total_images and not switched_due_to_limit:
-                        print("   ⏳ Chờ 15 giây...")
-                        page.wait_for_timeout(15000)
+                        print("   ⏳ Chờ 5 giây...")
+                        page.wait_for_timeout(5000)
 
             except Exception as e:
                 print(f"❌ Lỗi profile {profile_idx + 1}: {e}")
